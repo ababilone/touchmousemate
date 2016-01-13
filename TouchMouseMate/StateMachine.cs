@@ -1,10 +1,11 @@
 ﻿using System.Timers;
 
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
     public class StateMachine
     {
-        private readonly object _locker = new object();
+	    private readonly TouchConfiguration _touchConfiguration;
+	    private readonly object _locker = new object();
         private IMouseState _current;
         private readonly Timer _timer;
         private readonly IMouseState _idle = new Idle();
@@ -15,9 +16,10 @@ namespace Lextm.TouchMouseMate
         private readonly IMouseState _rightDownPending = new RightDownPending();
         private readonly IMouseState _middleDownPending = new MiddleDownPending();
 
-        public StateMachine()
+        public StateMachine(TouchConfiguration touchConfiguration)
         {
-            _timer = new Timer {Interval = NativeMethods.Section.MinClickTimeout, Enabled = false, AutoReset = false};
+	        _touchConfiguration = touchConfiguration;
+	        _timer = new Timer {Interval = _touchConfiguration.Section.MinClickTimeout, Enabled = false, AutoReset = false};
             _timer.Elapsed += (sender, args) => Process(MouseEventFlags.Absolute);
             Idle();
         }
@@ -35,21 +37,21 @@ namespace Lextm.TouchMouseMate
             _timer.Enabled = false;
             if (_current == _leftDown)
             {
-                if (NativeMethods.Section.TouchOverClick)
+                if (_touchConfiguration.Section.TouchOverClick)
                 {
-                    NativeMethods.MouseEvent(NativeMethods.Section.LeftHandMode ? MouseEventFlags.RightUp : MouseEventFlags.LeftUp);
+                    NativeMethods.MouseEvent(_touchConfiguration.Section.LeftHandMode ? MouseEventFlags.RightUp : MouseEventFlags.LeftUp);
                 }
             }
             else if (_current == _rightDown)
             {
-                if (NativeMethods.Section.TouchOverClick)
+                if (_touchConfiguration.Section.TouchOverClick)
                 {
-                    NativeMethods.MouseEvent(NativeMethods.Section.LeftHandMode ? MouseEventFlags.LeftUp : MouseEventFlags.RightUp);
+                    NativeMethods.MouseEvent(_touchConfiguration.Section.LeftHandMode ? MouseEventFlags.LeftUp : MouseEventFlags.RightUp);
                 }
             }
             else if (_current == _middleDown)
             {
-                if (NativeMethods.Section.MiddleClick)
+                if (_touchConfiguration.Section.MiddleClick)
                 {
                     NativeMethods.MouseEvent(MouseEventFlags.MiddleUp);
                 }
@@ -61,9 +63,9 @@ namespace Lextm.TouchMouseMate
         {
             _timer.Enabled = false;
             _current = _leftDown;
-            if (NativeMethods.Section.TouchOverClick)
+            if (_touchConfiguration.Section.TouchOverClick)
             {
-                NativeMethods.MouseEvent(NativeMethods.Section.LeftHandMode ? MouseEventFlags.RightDown : MouseEventFlags.LeftDown);
+                NativeMethods.MouseEvent(_touchConfiguration.Section.LeftHandMode ? MouseEventFlags.RightDown : MouseEventFlags.LeftDown);
             }
         }
 
@@ -71,9 +73,9 @@ namespace Lextm.TouchMouseMate
         {
             _timer.Enabled = false; 
             _current = _rightDown;
-            if (NativeMethods.Section.TouchOverClick)
+            if (_touchConfiguration.Section.TouchOverClick)
             {
-                NativeMethods.MouseEvent(NativeMethods.Section.LeftHandMode ? MouseEventFlags.LeftDown : MouseEventFlags.RightDown);
+                NativeMethods.MouseEvent(_touchConfiguration.Section.LeftHandMode ? MouseEventFlags.LeftDown : MouseEventFlags.RightDown);
             }
         }
 
@@ -81,7 +83,7 @@ namespace Lextm.TouchMouseMate
         {
             _timer.Enabled = false;
             _current = _middleDown;
-            if (NativeMethods.Section.MiddleClick)
+            if (_touchConfiguration.Section.MiddleClick)
             {
                 NativeMethods.MouseEvent(MouseEventFlags.MiddleDown);
             }

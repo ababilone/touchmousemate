@@ -1,4 +1,4 @@
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
     public interface IMouseState
     {

@@ -1,30 +1,18 @@
 ﻿using System.Configuration;
 
-namespace Lextm.TouchMouseMate.Configuration
+namespace TouchMouseMate.Configuration
 {
     public class TouchMouseMateSection : ConfigurationSection
     {
-        /// <summary>
-        /// Gets the StringValue setting.
-        /// </summary>
         [ConfigurationProperty("minClickTimeout", IsRequired = true)]
         [IntegerValidator]
-        public int MinClickTimeout
-        {
-            get { return (int)base["minClickTimeout"]; }
-        }
+        public int MinClickTimeout => (int)base["minClickTimeout"];
 
-        /// <summary>
-        /// Gets the StringValue setting.
-        /// </summary>
         [ConfigurationProperty("maxClickTimeout", IsRequired = true)]
         [IntegerValidator]
-        public int MaxClickTimeout
-        {
-            get { return (int)base["maxClickTimeout"]; }
-        }
+        public int MaxClickTimeout => (int)base["maxClickTimeout"];
 
-        [ConfigurationProperty("middleClick", IsRequired = true)]
+	    [ConfigurationProperty("middleClick", IsRequired = true)]
         public bool MiddleClick
         {
             get { return ((bool)base["middleClick"]); }

@@ -1,6 +1,6 @@
 ﻿using log4net;
 
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
     public static class Log
     {

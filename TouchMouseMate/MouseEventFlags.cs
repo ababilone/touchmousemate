@@ -1,6 +1,6 @@
 using System;
 
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
     [Flags]
     public enum MouseEventFlags

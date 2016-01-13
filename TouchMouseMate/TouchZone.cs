@@ -1,16 +1,23 @@
 using System;
 
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
-    internal struct TouchZone
+    internal class TouchZone
     {
-        private TouchPoint _current;
+	    private readonly TouchConfiguration _touchConfiguration;
+	    private TouchPoint _current;
         private TouchPoint _previous;
         private TouchPoint _previousPrevious;
         private int _time;
         internal double Movement;
 
-        public void Consume(int x, int y, int pixel)
+	    public TouchZone(TouchConfiguration touchConfiguration)
+	    {
+		    _touchConfiguration = touchConfiguration;
+			_current = new TouchPoint();
+	    }
+
+	    public void Consume(int x, int y, int pixel)
         {
             _current.Consume(x, y, pixel);
         }
@@ -34,22 +41,13 @@ namespace Lextm.TouchMouseMate
             }
         }
 
-        public bool KeyUpDetected
-        {
-            get { return _current.Pixel == 0 && _previous.Pixel > 0; }
-        }
+        public bool KeyUpDetected => _current.Pixel == 0 && _previous.Pixel > 0;
 
-        public bool KeyDownDetected
-        {
-            get { return _previous.Pixel > 0 && _previousPrevious.Pixel == 0; }
-        }
+	    public bool KeyDownDetected => _previous.Pixel > 0 && _previousPrevious.Pixel == 0;
 
-        public bool MoveDetected
-        {
-            get { return Movement > NativeMethods.Section.MoveThreshold; }
-        }
+	    public bool MoveDetected => Movement > _touchConfiguration.Section.MoveThreshold;
 
-        public void Prepare()
+	    public void Prepare()
         {
             _previousPrevious = _previous;
             _previous = _current;

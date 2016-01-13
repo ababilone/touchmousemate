@@ -8,7 +8,7 @@
     <ProjectGuid>{C4EE79A1-278E-4961-BCDC-42DE9AF7BEC0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lextm.TouchMouseMate</RootNamespace>
+    <RootNamespace>TouchMouseMate</RootNamespace>
     <AssemblyName>TouchMouseMate</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,7 +40,7 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Lextm.TouchMouseMate.SingleInstanceManager</StartupObject>
+    <StartupObject>TouchMouseMate.SingleInstanceManager</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -48,7 +48,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -73,7 +73,7 @@
       <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Research.TouchMouseSensor">
-      <HintPath>..\lib\Microsoft.Research.TouchMouseSensor.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\TMouse\x64\bin\x64\Release\Microsoft.Research.TouchMouseSensor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
@@ -92,14 +92,32 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Menu\BaseToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Configuration\TouchMouseMateSection.cs" />
+    <Compile Include="Menu\ExitStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\HelpToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Idle.cs" />
     <Compile Include="IMouseState.cs" />
     <Compile Include="LeftDown.cs" />
     <Compile Include="LeftDownPending.cs" />
+    <Compile Include="Menu\LeftHandedStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Log.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="MouseMapWindow.xaml.cs">
+      <DependentUpon>MouseMapWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menu\MiddleClickStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\MouseMapStripMenuItem.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="MiddleDown.cs" />
     <Compile Include="MiddleDownPending.cs" />
@@ -115,6 +133,13 @@
     <Compile Include="RightDownPending.cs" />
     <Compile Include="SingleInstanceController.cs" />
     <Compile Include="StateMachine.cs" />
+    <Compile Include="TouchConfiguration.cs" />
+    <Compile Include="TouchMouseEventArgs.cs" />
+    <Compile Include="TouchMouseEventHandler.cs" />
+    <Compile Include="TouchMouseEventManager.cs" />
+    <Compile Include="Menu\TouchOverStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TouchPoint.cs" />
     <Compile Include="TouchZone.cs" />
   </ItemGroup>
@@ -133,7 +158,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml">
+    <Page Include="MouseMapWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

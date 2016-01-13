@@ -1,4 +1,4 @@
-namespace Lextm.TouchMouseMate
+namespace TouchMouseMate
 {
     public class MiddleDownPending : IMouseState
     {

@@ -1,8 +1,8 @@
-﻿<Window x:Class="WpfApplication1.MainWindow"
+﻿<Window x:Class="TouchMouseMate.MouseMapWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+  <Grid>
+    <Image Name="SensorImage" Stretch="Fill"/>
+  </Grid>
 </Window>
