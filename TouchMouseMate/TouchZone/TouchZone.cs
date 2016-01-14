@@ -1,28 +1,35 @@
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace TouchMouseMate.TouchZone
 {
-	public abstract class TouchZone
+	public abstract class TouchZone : INotifyPropertyChanged
 	{
-		private readonly string _name;
 		private readonly TouchConfiguration _touchConfiguration;
 		private TouchPoint _current;
 		private TouchPoint _previous;
 		private TouchPoint _previousPrevious;
 		private int _time;
 		internal double Movement;
+		private bool _isPressed;
 
 		protected TouchZone(string name, TouchConfiguration touchConfiguration, int[,] mask)
 		{
-			_name = name;
+			Name = name;
 			_touchConfiguration = touchConfiguration;
 			Mask = mask;
 			_current = new TouchPoint();
 		}
 
+		public bool IsInZone(int x, int y)
+		{
+			return Mask[y, x] == 1;
+		}
+
 		public void Consume(int x, int y, int pixel)
 		{
-			if (Mask[x, y] == 1)
+			if (IsInZone(x, y))
 				_current.Consume(x, y, pixel);
 		}
 
@@ -83,9 +90,15 @@ namespace TouchMouseMate.TouchZone
 			}
 		}
 
-		public bool IsPressed { get; set; }
+		public bool IsPressed
+		{
+			get { return _isPressed; }
+			set { _isPressed = value; OnPropertyChanged(); }
+		}
 
 		public int[,] Mask { get; set; }
+
+		public string Name { get; }
 
 		public void Prepare()
 		{
@@ -98,6 +111,13 @@ namespace TouchMouseMate.TouchZone
 		{
 			_time = 0;
 			Movement = 0F;
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

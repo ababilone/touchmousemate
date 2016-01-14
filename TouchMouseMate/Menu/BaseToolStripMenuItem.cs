@@ -8,13 +8,12 @@ namespace TouchMouseMate.Menu
 	{
 		protected BaseToolStripMenuItem(string text, Image image) : base(text, image, Clicked)
 		{
-			
 		}
 
 		private static void Clicked(object sender, EventArgs args)
 		{
 			var baseToolStripMenuItem = sender as BaseToolStripMenuItem;
-			baseToolStripMenuItem.Clicked(args);
+			baseToolStripMenuItem?.Clicked(args);
 		}
 
 		protected abstract void Clicked(EventArgs args);

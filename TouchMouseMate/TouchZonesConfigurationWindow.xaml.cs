@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -7,21 +9,22 @@ namespace TouchMouseMate
 {
 	public partial class TouchZonesConfigurationWindow
 	{
-		private readonly TouchZone.TouchZone[] _touchZones;
 		private readonly TouchMouseEventManager _touchMouseEventManager;
 
 		public static readonly DependencyProperty TouchImageWidthProperty = DependencyProperty.Register("TouchImageWidth", typeof(int), typeof(TouchZonesConfigurationWindow), new PropertyMetadata(default(int)));
 		public static readonly DependencyProperty TouchImageHeightProperty = DependencyProperty.Register("TouchImageHeight", typeof(int), typeof(TouchZonesConfigurationWindow), new PropertyMetadata(default(int)));
+		public static readonly DependencyProperty TouchZonesProperty = DependencyProperty.Register("TouchZones", typeof(IEnumerable<TouchZone.TouchZone>), typeof(TouchZonesConfigurationWindow), new PropertyMetadata(null));
+
 
 		public TouchZonesConfigurationWindow()
 		{
 			InitializeComponent();
 		}
 
-		public TouchZonesConfigurationWindow(TouchMouseEventManager touchMouseEventManager, params TouchZone.TouchZone[] touchZones) : this()
+		public TouchZonesConfigurationWindow(TouchMouseEventManager touchMouseEventManager, TouchZoneProvider touchZoneProvider) : this()
 		{
 			_touchMouseEventManager = touchMouseEventManager;
-			_touchZones = touchZones;
+			TouchZones = touchZoneProvider.Get();
 
 			Loaded += MainWindow_Loaded;
 			Closed += MainWindow_Closed;
@@ -39,12 +42,19 @@ namespace TouchMouseMate
 			set { SetValue(TouchImageHeightProperty, value); }
 		}
 
-		private void MainWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
+		public IEnumerable<TouchZone.TouchZone> TouchZones
+		{
+			get { return (IEnumerable<TouchZone.TouchZone>)GetValue(TouchZonesProperty); }
+			set { SetValue(TouchZonesProperty, value); }
+		}
+
+
+		private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
 			_touchMouseEventManager.TouchMouseEvent += TouchMouseEventManagerOnTouchMouseEvent;
 		}
 
-		private void MainWindow_Closed(object sender, System.EventArgs e)
+		private void MainWindow_Closed(object sender, EventArgs e)
 		{
 			_touchMouseEventManager.TouchMouseEvent -= TouchMouseEventManagerOnTouchMouseEvent;
 		}
@@ -56,14 +66,40 @@ namespace TouchMouseMate
 			var image = touchMouseEventArgs.Image;
 			var imageSize = touchMouseEventArgs.ImageSize;
 
-			Dispatcher.BeginInvoke((Action) (() =>
-			{
-				InitializeGrid(imageWidth, imageHeight, image);
-				UpdateGrid(image);
-			}));
+			Dispatcher.BeginInvoke((Action)(() =>
+		   {
+			   InitializeGrid(image, imageWidth, imageHeight);
+			   UpdateZones(image, imageWidth, imageHeight);
+			   UpdateGrid(image);
+		   }));
 
 			//Dispatcher.BeginInvoke((Action)(() => { SensorImage.Source = BitmapSource.Create(imageWidth, imageHeight, 96, 96, PixelFormats.Gray8, null, image, imageWidth); }));
 		}
+
+		private void UpdateZones(byte[] image, int imageWidth, int imageHeight)
+		{
+			for (var i = 0; i < image.Length; i++)
+			{
+				var currentGrid = UniformGrid.Children[i] as Grid;
+				var textBlock = currentGrid?.Children[0] as TextBlock;
+				if (textBlock != null)
+				{
+					var y = i / imageWidth;
+					var x = i - y * imageWidth;
+
+					textBlock.Text = "";
+
+					foreach (var touchZone in TouchZones)
+					{
+						if (touchZone.IsInZone(x, y))
+						{
+							textBlock.Text += touchZone.Name.FirstOrDefault();
+						}
+					}
+				}
+			}
+		}
+
 
 		private void UpdateGrid(byte[] image)
 		{
@@ -73,15 +109,11 @@ namespace TouchMouseMate
 				if (currentGrid != null)
 				{
 					currentGrid.Background = new SolidColorBrush(image[i] > 0 ? Colors.Red : Colors.GreenYellow);
-
-					var textBlock = currentGrid.Children[0] as TextBlock;
-					if (textBlock != null)
-						textBlock.Text = "";
 				}
 			}
 		}
 
-		private void InitializeGrid(int imageWidth, int imageHeight, byte[] image)
+		private void InitializeGrid(byte[] image, int imageWidth, int imageHeight)
 		{
 			if (TouchImageWidth == imageWidth && TouchImageHeight == imageHeight)
 				return;

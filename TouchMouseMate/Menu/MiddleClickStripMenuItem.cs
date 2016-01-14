@@ -9,6 +9,7 @@ namespace TouchMouseMate.Menu
 		public MiddleClickStripMenuItem(TouchConfiguration touchConfiguration) : base("Middle-click", Properties.Resources.start_here)
 		{
 			_touchConfiguration = touchConfiguration;
+			CheckOnClick = true;
 		}
 
 		protected override void Clicked(EventArgs args)

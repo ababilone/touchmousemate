@@ -9,6 +9,7 @@ namespace TouchMouseMate.Menu
 		public LeftHandedStripMenuItem(TouchConfiguration touchConfiguration) : base("Left-handed", Properties.Resources.input_mouse)
 		{
 			_touchConfiguration = touchConfiguration;
+			CheckOnClick = true;
 		}
 
 		protected override void Clicked(EventArgs args)

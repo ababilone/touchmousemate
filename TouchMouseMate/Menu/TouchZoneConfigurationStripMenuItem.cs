@@ -5,19 +5,19 @@ namespace TouchMouseMate.Menu
 	class TouchZoneConfigurationStripMenuItem : BaseToolStripMenuItem
 	{
 		private readonly TouchMouseEventManager _touchMouseEventManager;
-		private readonly TouchZone.TouchZone[] _touchZones;
+		private readonly TouchZoneProvider _touchZoneProvider;
 		private TouchZonesConfigurationWindow _touchZonesConfigurationWindow;
 
-		public TouchZoneConfigurationStripMenuItem(TouchMouseEventManager touchMouseEventManager, params TouchZone.TouchZone[] touchZones) : base("Touch Zone Configuration", Properties.Resources.mouse.ToBitmap())
+		public TouchZoneConfigurationStripMenuItem(TouchMouseEventManager touchMouseEventManager, TouchZoneProvider touchZoneProvider) : base("Touch Zone Configuration", Properties.Resources.mouse.ToBitmap())
 		{
 			_touchMouseEventManager = touchMouseEventManager;
-			_touchZones = touchZones;
+			_touchZoneProvider = touchZoneProvider;
 		}
 
 		protected override void Clicked(EventArgs args)
 		{
 			if (_touchZonesConfigurationWindow == null)
-				_touchZonesConfigurationWindow = new TouchZonesConfigurationWindow(_touchMouseEventManager, _touchZones);
+				_touchZonesConfigurationWindow = new TouchZonesConfigurationWindow(_touchMouseEventManager, _touchZoneProvider);
 
 			_touchZonesConfigurationWindow.Show();
 		}

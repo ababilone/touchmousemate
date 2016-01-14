@@ -9,6 +9,7 @@ namespace TouchMouseMate.Menu
 		public TouchOverStripMenuItem(TouchConfiguration touchConfiguration) : base("Touch-over-click", Properties.Resources.user_desktop)
 		{
 			_touchConfiguration = touchConfiguration;
+			CheckOnClick = true;
 		}
 
 		protected override void Clicked(EventArgs args)

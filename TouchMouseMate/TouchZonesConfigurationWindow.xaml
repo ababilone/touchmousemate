@@ -15,6 +15,17 @@
     <Border Margin="10" BorderBrush="Black" BorderThickness="1">
       <UniformGrid x:Name="UniformGrid" Rows="{Binding TouchImageHeight}" Columns="{Binding TouchImageWidth}" />
     </Border>
-    <!--<Image Name="SensorImage" Stretch="Fill"/>-->
+    <StackPanel Grid.Column="1" Margin="10">
+      <TextBlock Text="Touch Zones" FontWeight="Bold" />
+      <ListView ItemsSource="{Binding TouchZones}">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <CheckBox IsChecked="{Binding IsPressed}" IsEnabled="False">
+              <TextBlock Text="{Binding Name}" />
+            </CheckBox>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
+    </StackPanel>
   </Grid>
 </Window>

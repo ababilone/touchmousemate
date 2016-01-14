@@ -38,17 +38,15 @@ namespace TouchMouseMate
 			// Reinizialize Touched Zones
 			_pixelFound[0] = 0;
 			_pixelFound[1] = 0;
-			// Iterate over rows.
-			for (int y = 0; y < pTouchMouseStatus.m_dwImageHeight; y++)
+
+			for (var y = 0; y < pTouchMouseStatus.m_dwImageHeight; y++)
 			{
-				// Iterate over columns.
-				for (int x = 0; x < pTouchMouseStatus.m_dwImageWidth; x++)
+				for (var x = 0; x < pTouchMouseStatus.m_dwImageWidth; x++)
 				{
-					if (pabImage[pTouchMouseStatus.m_dwImageWidth * y + x] != 0)
-					// analyze captured image for touch gesture.
+					var pixel = pabImage[pTouchMouseStatus.m_dwImageWidth * y + x];
+					if (pixel != 0)
 					{
-						_touchMap[x, y] = true; // touch detected
-						int pixel = pabImage[pTouchMouseStatus.m_dwImageWidth * y + x]; // touch strength recorded
+						_touchMap[x, y] = true;
 						if (pixel == 0)
 						{
 							continue;
