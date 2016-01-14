@@ -24,7 +24,6 @@ namespace TouchMouseMate
 		private void MainWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
 		{
 			_touchMouseEventManager.TouchMouseEvent += TouchMouseEventManagerOnTouchMouseEvent;
-
 		}
 
 		private void MainWindow_Closed(object sender, System.EventArgs e)

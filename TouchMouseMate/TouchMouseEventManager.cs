@@ -6,59 +6,16 @@ namespace TouchMouseMate
 	public class TouchMouseEventManager : IDisposable
 	{
 		private readonly StateMachine _machine;
-		private readonly TouchConfiguration _touchConfiguration;
+		private readonly TouchZoneProvider _touchZoneProvider;
 
-		public TouchMouseEventManager(StateMachine stateMachine, TouchConfiguration touchConfiguration)
+		public TouchMouseEventManager(StateMachine stateMachine, TouchZoneProvider touchZoneProvider)
 		{
-			_touchConfiguration = touchConfiguration;
+			_touchZoneProvider = touchZoneProvider;
 			_machine = stateMachine;
-
-			_leftZone = new TouchZone(_touchConfiguration);
-			_rightZone = new TouchZone(_touchConfiguration);
 		}
-
-
 
 		private readonly bool[,] _touchMap = new bool[15, 13];
 		private readonly int[] _pixelFound = { 0, 0 };
-		private readonly TouchZone _leftZone;
-		private readonly TouchZone _rightZone;
-
-		private readonly int[,] _leftMask = {
-			{1, 1, 1, 1, 1,   1, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{1, 1, 1, 1, 1,   1, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 1, 1, 1, 1,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 1, 1, 1, 1,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-
-			{0, 0, 1, 1, 1,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 1, 1, 1,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 1, 1, 1,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0}
-		};
-
-		private readonly int[,] _rightMask = {
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 1,   1, 1, 1, 1, 1},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 1,   1, 1, 1, 1, 1},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   1, 1, 1, 1, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   1, 1, 1, 1, 0},
-
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   1, 1, 1, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   1, 1, 1, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   1, 1, 1, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0},
-			{0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0}
-		};
 
 		public event TouchMouseEventHandler TouchMouseEvent;
 
@@ -97,26 +54,18 @@ namespace TouchMouseMate
 							continue;
 						}
 
-						// Get the pixel value at current position.
-						if (_leftMask[y, x] == 1)
-						{
-							// Increment values.
-							_leftZone.Consume(x, y, pixel);
-						}
-						else if (_rightMask[y, x] == 1)
-						{
-							// Increment values.
-							_rightZone.Consume(x, y, pixel);
-						}
+						foreach (var touchZone in _touchZoneProvider.Get())
+							touchZone.Consume(x, y, pixel);
 					}
 				}
 			}
 
 			// Calculate and display the center of mass for the touches present.
-			_leftZone.AppendTime(pTouchMouseStatus.m_dwTimeDelta);
-			_rightZone.AppendTime(pTouchMouseStatus.m_dwTimeDelta);
-			_leftZone.ComputeCenter();
-			_rightZone.ComputeCenter();
+			foreach (var touchZone in _touchZoneProvider.Get())
+			{
+				touchZone.AppendTime(pTouchMouseStatus.m_dwTimeDelta);
+				touchZone.ComputeCenter();
+			}
 
 			if (pTouchMouseStatus.m_dwTimeDelta == 0)
 			{
@@ -124,11 +73,22 @@ namespace TouchMouseMate
 				// undetermined delta since the last report.
 				Log.Info("New touch detected");
 				_machine.Idle();
-				_leftZone.Reset();
-				_rightZone.Reset();
+
+				foreach (var touchZone in _touchZoneProvider.Get())
+				{
+					touchZone.Reset();
+				}
 			}
 
-			ApproachThree();
+			foreach (var touchZone in _touchZoneProvider.Get())
+			{
+				touchZone.DetectEvents();
+			}
+
+			foreach (var touchZone in _touchZoneProvider.Get())
+			{
+				touchZone.Prepare();
+			}
 
 			if (pTouchMouseStatus.m_fDisconnect)
 			{
@@ -146,56 +106,6 @@ namespace TouchMouseMate
 			});
 		}
 
-
-		private void ApproachThree()
-		{
-			if (_leftZone.KeyUpDetected)
-			{
-				_machine.Process(MouseEventFlags.LeftUp);
-				_leftZone.Movement = 0F;
-			}
-
-			if (_rightZone.KeyUpDetected)
-			{
-				_machine.Process(MouseEventFlags.RightUp);
-				_rightZone.Movement = 0F;
-			}
-
-			if (_leftZone.KeyDownDetected)
-			{
-				_machine.Process(MouseEventFlags.LeftDown);
-			}
-
-			if (_rightZone.KeyDownDetected)
-			{
-				_machine.Process(MouseEventFlags.RightDown);
-			}
-
-			if (_leftZone.MoveDetected)
-			{
-				Log.DebugFormat("left move {0}", _leftZone.Movement);
-				if (_touchConfiguration.Section.MoveDetect)
-				{
-					_machine.Process(MouseEventFlags.Move);
-				}
-
-				_leftZone.Movement = 0F;
-			}
-
-			if (_rightZone.MoveDetected)
-			{
-				Log.DebugFormat("right move {0}", _rightZone.Movement);
-				if (_touchConfiguration.Section.MoveDetect)
-				{
-					_machine.Process(MouseEventFlags.Move);
-				}
-
-				_rightZone.Movement = 0F;
-			}
-
-			_leftZone.Prepare();
-			_rightZone.Prepare();
-		}
 
 		public void Dispose()
 		{

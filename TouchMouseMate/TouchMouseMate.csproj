@@ -92,6 +92,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TouchZoneProvider.cs" />
+    <Compile Include="TouchZone\LeftTouchZone.cs" />
     <Compile Include="Menu\BaseToolStripMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -110,6 +112,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Log.cs" />
+    <Compile Include="Menu\TouchZoneConfigurationStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TouchZone\RightTouchZone.cs" />
+    <Compile Include="TouchZonesConfigurationWindow.xaml.cs">
+      <DependentUpon>TouchZonesConfigurationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MouseMapWindow.xaml.cs">
       <DependentUpon>MouseMapWindow.xaml</DependentUpon>
     </Compile>
@@ -141,7 +150,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TouchPoint.cs" />
-    <Compile Include="TouchZone.cs" />
+    <Compile Include="TouchZone\TouchZone.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -158,6 +167,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="TouchZonesConfigurationWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MouseMapWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

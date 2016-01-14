@@ -19,7 +19,8 @@ namespace TouchMouseMate
 
 			_touchConfiguration = new TouchConfiguration();
 			var stateMachine = new StateMachine(_touchConfiguration);
-			_touchMouseEventManager = new TouchMouseEventManager(stateMachine, _touchConfiguration);
+			var touchZoneProvider = new TouchZoneProvider(stateMachine, _touchConfiguration);
+			_touchMouseEventManager = new TouchMouseEventManager(stateMachine, touchZoneProvider);
 		}
 
 		private NotifyIcon _icon;
@@ -44,6 +45,7 @@ namespace TouchMouseMate
 			contextMenuStrip.Items.Add(new HelpToolStripMenuItem());
 			contextMenuStrip.Items.Add(new ToolStripSeparator());
 			contextMenuStrip.Items.Add(new MouseMapStripMenuItem(_touchMouseEventManager));
+			contextMenuStrip.Items.Add(new TouchZoneConfigurationStripMenuItem(_touchMouseEventManager));
 			contextMenuStrip.Items.Add(new ToolStripSeparator());
 			contextMenuStrip.Items.Add(new ExitStripMenuItem(_icon));
 
